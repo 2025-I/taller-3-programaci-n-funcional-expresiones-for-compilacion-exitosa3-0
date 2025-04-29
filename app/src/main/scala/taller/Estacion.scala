@@ -10,7 +10,7 @@ object ManiobrasTrenes {
   case class Uno(n: Int) extends Movimiento
   case class Dos(n: Int) extends Movimiento
 
-  class Estacion {
+  case class Estacion() {
     def aplicarMovimiento(e: Estado, m: Movimiento): Estado = {
       val (principal, uno, dos) = e
 
