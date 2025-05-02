@@ -1,11 +1,12 @@
 package taller
 
 import taller.ManiobrasTrenes._
-
 import org.scalatest.funsuite.AnyFunSuite
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 import taller.ManiobrasTrenes.Estacion
+
+import scala.util.Random
 
 @RunWith(classOf[JUnitRunner])
 class EstacionTest extends AnyFunSuite{
@@ -49,6 +50,49 @@ class EstacionTest extends AnyFunSuite{
     val e5 = objEstacion.aplicarMovimiento(e4, Uno(-2))
     val esperado = (List('a', 'c', 'd'), Nil, List('b'))
     assert(e5== esperado)
+  }
+
+  def generarVagones(n: Int): List[Char] =
+    (1 to n).map(i => ('a' + (i % 26)).toChar).toList
+
+  def generarMovimientos(n: Int): List[Movimiento] = {
+    val r = new Random(42)
+    (1 to n).map { _ =>
+      if (r.nextBoolean()) Uno(r.nextInt(5) - 2)
+      else Dos(r.nextInt(5) - 2)
+    }.toList
+  }
+
+  def aplicarSecuencia(e: Estado, movimientos: List[Movimiento]): Estado = {
+    movimientos.foldLeft(e) { (estado, mov) => objEstacion.aplicarMovimiento(estado, mov) }
+  }
+
+  test("Prueba de juguete: 10 vagones y 10 movimientos") {
+    val tren = generarVagones(10)
+    val movimientos = generarMovimientos(10)
+    val estadoFinal = aplicarSecuencia((tren, Nil, Nil), movimientos)
+    assert(estadoFinal._1.size + estadoFinal._2.size + estadoFinal._3.size == 10)
+  }
+
+  test("Prueba pequeña: 100 vagones y 100 movimientos") {
+    val tren = generarVagones(100)
+    val movimientos = generarMovimientos(100)
+    val estadoFinal = aplicarSecuencia((tren, Nil, Nil), movimientos)
+    assert(estadoFinal._1.size + estadoFinal._2.size + estadoFinal._3.size == 100)
+  }
+
+  test("Prueba mediana: 500 vagones y 500 movimientos") {
+    val tren = generarVagones(500)
+    val movimientos = generarMovimientos(500)
+    val estadoFinal = aplicarSecuencia((tren, Nil, Nil), movimientos)
+    assert(estadoFinal._1.size + estadoFinal._2.size + estadoFinal._3.size == 500)
+  }
+
+  test("Prueba grande: 1000 vagones y 1000 movimientos") {
+    val tren = generarVagones(1000)
+    val movimientos = generarMovimientos(1000)
+    val estadoFinal = aplicarSecuencia((tren, Nil, Nil), movimientos)
+    assert(estadoFinal._1.size + estadoFinal._2.size + estadoFinal._3.size == 1000)
   }
 
 
