@@ -62,5 +62,70 @@ object ManiobrasTrenes {
 
       aplicarMovimientosAux(movs, List(e))
     }
+    def definirManiobra(t1: Tren, t2: Tren): Maniobra = {
+      require(t1.toSet == t2.toSet)
+
+      if (t1 == t2) { Nil }
+      else if (t1.reverse == t2) {
+        (for (_ <- 1 to t1.size) yield Dos(1)).toList
+      }
+      else {
+        case class Nodo(estado: Estado, movimientos: List[Movimiento])
+        @tailrec
+        def bfs(queue: Vector[Nodo], visited: Set[Estado]): Maniobra = {
+          if (queue.isEmpty) Nil
+          else {
+            val nodo = queue.head
+            val (principal, uno, dos) = nodo.estado
+            if (principal.isEmpty && uno.isEmpty && dos == t2) {
+              nodo.movimientos.reverse
+            } else if (visited.contains(nodo.estado)) {
+              bfs(queue.tail, visited)
+            } else {
+              val posiblesMovimientos = {
+                val movimientosPrincipal = if (principal.nonEmpty) {
+                  if (principal.length > 100) {
+                    List(Uno(1), Dos(1))
+                  } else {
+                    val movimientosUno = for (n <- 1 to principal.length) yield Uno(n)
+                    val movimientosDos = for (n <- 1 to principal.length) yield Dos(n)
+                    movimientosUno.toList ++ movimientosDos.toList
+                  }
+                } else Nil
+
+                val movimientosUno = if (uno.nonEmpty) {
+                  for (n <- 1 to uno.length) yield Uno(-n)
+                } else Nil
+
+                val movimientosDos = if (dos.nonEmpty) {
+                  for (n <- 1 to dos.length) yield Dos(-n)
+                } else Nil
+
+                movimientosPrincipal ++ movimientosUno.toList ++ movimientosDos.toList
+              }
+
+              val nuevosNodos = for {
+                m <- posiblesMovimientos
+                nuevoEstado = aplicarMovimiento(nodo.estado, m)
+                if !visited.contains(nuevoEstado)
+              } yield Nodo(nuevoEstado, m :: nodo.movimientos)
+
+              bfs(queue.tail ++ nuevosNodos.toVector, visited + nodo.estado)
+            }
+          }
+        }
+
+        val resultado = bfs(Vector(Nodo((t1, Nil, Nil), Nil)), Set.empty)
+
+        if (resultado.isEmpty) {
+          val moverATodos = (for (_ <- 1 to t1.length) yield Dos(1)).toList
+          val devolverEnOrden = (for (_ <- t2.reverse) yield Dos(-1)).toList
+          moverATodos ++ devolverEnOrden
+        } else {
+          resultado
+        }
+      }
+    }
+
   }
 }
