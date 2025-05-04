@@ -2,7 +2,7 @@
 
 ## 1. Descripción del proceso de ejecución
 
-### 1.1 Función `aplicarMovimientos`
+### 1.1 Función `aplicarMovimientos` 
 
 La función `aplicarMovimientos` tiene como objetivo aplicar una secuencia de movimientos a un estado inicial y devolver la lista de todos los estados visitados, incluyendo el estado inicial. Para entender su ejecución, analizaremos detalladamente su implementación y los llamados de pila.
 
