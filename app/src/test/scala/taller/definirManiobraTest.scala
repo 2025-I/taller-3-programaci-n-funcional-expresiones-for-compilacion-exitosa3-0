@@ -6,7 +6,7 @@ import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class DefinirManiobraTest extends AnyFunSuite {
+class definirManiobraTest extends AnyFunSuite {
 
   val estacion = new Estacion() // Necesario porque los métodos están dentro de esta clase
 
